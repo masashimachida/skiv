@@ -1,8 +1,8 @@
 import {program, Argument, Option} from 'commander'
-import DispatchCommand from "./commands/DispatchCommand";
+import RunCommand from "./commands/RunCommand";
 import InitCommand from "./commands/InitCommand";
 import IssueCommand from "./commands/IssueCommand";
-import RunCommand from "./commands/RunCommand";
+import StartCommand from "./commands/StartCommand";
 import {ISSUE_STATUSES, IssueStatus} from './db/schema'
 
 program
@@ -22,7 +22,7 @@ program.command('init')
 program.command('start')
   .description('run skiv')
   .action(async () => {
-    const command = new RunCommand()
+    const command = new StartCommand()
     await command.execute()
   })
 
@@ -32,7 +32,7 @@ program.command('run')
   .argument('<name>', 'member name')
   .argument('[model]', 'model name', 'sonnet')
   .action(async (name: string, model: string) => {
-    const command = new DispatchCommand()
+    const command = new RunCommand()
     await command.execute(name, model)
   })
 
@@ -70,11 +70,12 @@ issue.command('list')
 // assign
 issue.command('assign')
   .description('assign an issue')
-  .argument('<id>', 'issue id')
+  .argument('<fromStatus>', 'search from status')
+  .argument('<toStatus>', 'change to status')
   .argument('<assignee>', 'assignee name')
-  .action(async (id: number, assignee: string) => {
+  .action(async (fromStatus: IssueStatus, toStatus: IssueStatus, assignee: string) => {
     const command = new IssueCommand()
-    await command.assign(id, assignee)
+    await command.assign(fromStatus, toStatus, assignee)
   })
 
 // comment

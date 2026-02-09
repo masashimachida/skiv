@@ -1,6 +1,6 @@
-import {Database} from "../db";
-import {isIssuePriority, isIssueStatus, Issue, ISSUE_PRIORITIES, IssueStatus} from "../db/schema";
-import {executeImmediate} from "../utils";
+import {Database} from "./db";
+import {isIssuePriority, isIssueStatus, Issue, ISSUE_PRIORITIES, IssueStatus} from "./db/schema";
+import {executeImmediate} from "./utils";
 
 /**
  * Provides services and operations for managing issues in the system.

@@ -1,5 +1,5 @@
 import {Issue} from "../../../../skiv/src/db/schema";
-import Member from "../../../../skiv/src/Member";
+import Member from "../../../src/Member";
 
 export default class CustomMember extends Member {
 

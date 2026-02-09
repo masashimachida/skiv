@@ -1,7 +1,7 @@
 import fs, {existsSync} from "fs"
 import path, {dirname, join} from "path"
 import {load} from 'js-yaml'
-import {createDb, Database} from "../db";
+import {createDb, Database} from "../db"
 
 interface ConfigInterface {
   model: string

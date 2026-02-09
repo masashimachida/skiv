@@ -5,10 +5,19 @@
   "license": "ISC",
   "author": "",
   "type": "commonjs",
-  "main": "bin/skiv.ts",
-  "scripts": {},
+  "main": "dist/esm/index.js",
+  "scripts": {
+    "build": "npm run build:cjs && npm run build:esm",
+    "build:cjs": "tsc --project tsconfig.cjs.json",
+    "build:esm": "tsc --project tsconfig.esm.json"
+  },
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "files": [
+    "dist"
+  ],
   "bin": {
-    "skiv": "bin/skiv.ts"
+    "skiv": "bin/skiv.js"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",

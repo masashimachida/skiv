@@ -1,6 +1,6 @@
-import {IssueStatus} from "../db/schema";
-import {IssueService} from "../service/IssueService";
-import Command from "./Command";
+import {IssueStatus} from "../db/schema"
+import {IssueService} from "../IssueService"
+import Command from "./Command"
 
 export default class IssueCommand extends Command {
 
@@ -18,10 +18,10 @@ export default class IssueCommand extends Command {
     console.table(issues)
   }
 
-  async assign(id: number, assignee: string) {
+  async assign(fromStatus: IssueStatus, toStatus: IssueStatus, assignee: string) {
     this.initialize()
     const service = new IssueService(this.db)
-    return service.assignIssue(id, assignee)
+    return service.getNextIssue(fromStatus, toStatus, assignee)
   }
 
   async comment(id: number, by: string, message: string) {

@@ -1,4 +1,4 @@
-import {Kysely, Migrator, SqliteDialect, CompiledQuery} from 'kysely'
+import {Kysely, Migrator, SqliteDialect} from 'kysely'
 import SQLite from 'better-sqlite3'
 import {DatabaseSchema} from './schema'
 import {migrationProvider} from './migrations'

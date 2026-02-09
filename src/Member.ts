@@ -1,6 +1,6 @@
 import {spawn, SpawnOptions} from "child_process"
 import {Database} from "./db";
-import {IssueService} from "./service/IssueService"
+import {IssueService} from "./IssueService"
 import Logger, {type LogLevel} from "./Logger";
 import {sleep} from "./utils"
 
