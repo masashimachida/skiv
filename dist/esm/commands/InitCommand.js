@@ -5,13 +5,13 @@ export default class InitCommand extends Command {
     async execute() {
         const cwd = process.cwd();
         const dest = path.join(cwd, this.DIR_NAME);
-        const src = path.resolve(__dirname, "../../skeleton");
+        const skeleton = path.resolve(__dirname, "../../../skeleton");
         if (fs.existsSync(dest)) {
             console.error(`Error: Directory ${dest} already exists.`);
             return;
         }
         try {
-            await fs.copy(src, dest);
+            await fs.copy(skeleton, dest);
             console.log(`Initialized skiv in ${dest}`);
         }
         catch (err) {
