@@ -24,7 +24,7 @@ program.command('start')
 });
 // run
 program.command('run')
-    .description('dispatch member')
+    .description('run member')
     .argument('<name>', 'member name')
     .argument('[model]', 'model name', 'sonnet')
     .action(async (name, model) => {

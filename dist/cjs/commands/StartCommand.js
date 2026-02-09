@@ -31,7 +31,7 @@ class StartCommand extends Command_1.default {
             const pane = index + 1;
             const workspace = this.createWorkspace(dir, member.name, member.role);
             (0, utils_1.sendKeys)(pane, ["cd", workspace]);
-            (0, utils_1.sendKeys)(pane, ["npx", "skiv", "dispatch", member.name, model]);
+            (0, utils_1.sendKeys)(pane, ["npx", "skiv", "run", member.name, model]);
         }
     }
     /**
