@@ -1,8 +1,11 @@
 {
   "name": "skiv",
   "version": "0.0.1",
-  "description": "",
-  "license": "ISC",
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "claude code orchestration tool",
+  "license": "MIT",
   "author": "",
   "type": "commonjs",
   "main": "dist/esm/index.js",
@@ -14,7 +17,9 @@
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "files": [
-    "dist"
+    "bin",
+    "dist",
+    "skeleton"
   ],
   "bin": {
     "skiv": "bin/skiv.js"
