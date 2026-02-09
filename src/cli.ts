@@ -18,16 +18,16 @@ program.command('init')
     await command.execute()
   })
 
-// run
-program.command('run')
+// start
+program.command('start')
   .description('run skiv')
   .action(async () => {
     const command = new RunCommand()
     await command.execute()
   })
 
-// dispatch
-program.command('dispatch')
+// run
+program.command('run')
   .description('dispatch member')
   .argument('<name>', 'member name')
   .argument('[model]', 'model name', 'sonnet')
