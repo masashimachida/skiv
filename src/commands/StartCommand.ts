@@ -33,7 +33,7 @@ export default class StartCommand extends Command {
       const pane = index + 1
       const workspace = this.createWorkspace(dir, member.name, member.role)
       sendKeys(pane, ["cd", workspace])
-      sendKeys(pane, ["npx", "skiv", "dispatch", member.name, model])
+      sendKeys(pane, ["npx", "skiv", "run", member.name, model])
     }
   }
 
