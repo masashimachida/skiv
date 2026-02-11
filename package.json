@@ -1,12 +1,16 @@
 {
   "name": "skiv",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "publishConfig": {
     "access": "public"
   },
   "description": "claude code orchestration tool",
   "license": "MIT",
   "author": "",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/masashimachida/skiv.git"
+  },
   "type": "commonjs",
   "main": "dist/esm/index.js",
   "scripts": {
