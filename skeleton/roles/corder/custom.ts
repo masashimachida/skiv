@@ -5,7 +5,7 @@ export default class Custom extends AbstractWorker {
 
   public async before(): Promise<boolean> {
     this.logger.debug('before()')
-    const assignedIssue = await this.issueService.getNextIssue('open', 'in_progress', this.NAME)
+    const assignedIssue = await this.issueService.getNextIssue('todo', 'in_progress', this.NAME)
     if (assignedIssue) {
       this.logger.info(`found issue: #${assignedIssue.id} ${assignedIssue.title}`)
       await this.setup(assignedIssue)

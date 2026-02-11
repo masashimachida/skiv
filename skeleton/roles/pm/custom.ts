@@ -5,7 +5,7 @@ export default class CustomMember extends AbstractWorker {
 
   public async before(): Promise<boolean> {
     this.logger.debug('before()')
-    const issue = await this.issueService.getNextIssue('request_for_merge', 'in_merge_process', this.NAME)
+    const issue = await this.issueService.getNextIssue('approved', 'merging', this.NAME)
     if (issue) {
       this.logger.info(`found issue: #${issue.id} ${issue.title}`)
       await this.setup(issue)

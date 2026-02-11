@@ -5,7 +5,7 @@ export default class CustomMember extends AbstractWorker {
 
   public async before(): Promise<boolean> {
     this.logger.debug('before()')
-    const readyForReviewIssue = await this.issueService.getNextIssue('ready_for_review', 'reviewing', this.NAME)
+    const readyForReviewIssue = await this.issueService.getNextIssue('pending_review', 'reviewing', this.NAME)
     if (readyForReviewIssue) {
       this.logger.info(`found issue: #${readyForReviewIssue.id} ${readyForReviewIssue.title}`)
       await this.setup(readyForReviewIssue)
