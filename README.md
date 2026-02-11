@@ -3,7 +3,7 @@
 ## Installation
 
 ```shell
-npm i -g skiv
+$ npm i -g skiv
 ```
 
 ## Usage
@@ -13,15 +13,18 @@ npm i -g skiv
 cd to your project directory
 
 ```shell
-npx skiv init
+$ npx skiv init
 ```
 
 generate `.skiv` directory
 
 edit `.skiv/config.yaml` and `.skiv/roles/*`
 
+add `.skiv` to your gitignore
+
 ### Start
 
 ```shell
-npx skiv start
+$ tmux
+$ npx skiv start
 ```

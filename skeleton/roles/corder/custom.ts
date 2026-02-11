@@ -1,39 +1,21 @@
-import {Issue} from "../../../../skiv/src/db/schema";
-import Member from "../../../src/Member";
+import {Issue} from "skiv/skiv/db/schema"
+import AbstractWorker from "../../worker"
 
-export default class CustomMember extends Member {
+export default class Custom extends AbstractWorker {
 
   public async before(): Promise<boolean> {
-    const assignedIssue = await this.issueService.getAssignedIssue(this.NAME, 'open')
+    this.logger.debug('before()')
+    const assignedIssue = await this.issueService.getNextIssue('open', 'in_progress', this.NAME)
     if (assignedIssue) {
-
-      console.log(`[NEW ISSUE]
-Title: ${assignedIssue.title}
-Description: ${assignedIssue.description}
-`)
-
-      this.createPrompt(assignedIssue)
+      this.logger.info(`found issue: #${assignedIssue.id} ${assignedIssue.title}`)
+      await this.setup(assignedIssue)
       return true
     }
-
-    const assign = await this.issueService.assignNextIssue(this.NAME)
-    if (assign) {
-
-      console.log(`[NEW ISSUE]
-Title: ${assign.title}
-Description: ${assign.description}
-`)
-
-      this.createPrompt(assign)
-      return true
-    }
-
-    console.log('no issue')
 
     return false
   }
 
-  private createPrompt(issue: Issue) {
+  protected createPrompt(issue: Issue): void {
 
     const comments = issue.comments?.map(comment => {
       return `- id: ${comment.id}
@@ -58,5 +40,40 @@ ${issue.description}
 ${comments}
 
 このあとはCLAUDE.mdに沿って処理をしてください。`
+  }
+
+  public async after(response: string): Promise<void> {
+    this.logger.debug('after()')
+
+    if (!this.ISSUE_ID) {
+      throw new Error('ISSUE_ID is not set')
+    }
+    const res = this.parseResponse<{
+      result: "FINISH" | "ERROR",
+      branch: string,
+      issue_title: string,
+      reason?: string
+    }>(response)
+
+    if (res.result === "FINISH") {
+
+      try {
+        await this.git
+          .add('.')
+          .commit(`feature: issue #${this.ISSUE_ID} ${res.issue_title}`)
+        await this.issueService.updateStatus(this.ISSUE_ID, 'ready_for_review')
+      } catch (e) {
+        this.logger.error(e as string)
+        process.exit(1)
+      } finally {
+        await this.cleanupWorktree()
+      }
+
+    } else {
+      this.logger.error(res)
+      await this.issueService.updateStatus(this.ISSUE_ID, 'error')
+      await this.cleanupWorktree()
+      process.exit(1)
+    }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "skiv",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "publishConfig": {
     "access": "public"
   },
@@ -22,14 +22,13 @@
     "skeleton"
   ],
   "bin": {
-    "skiv": "bin/skiv.js"
+    "skiv": "bin/skiv.ts"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
     "@types/fs-extra": "^11.0.4",
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^25.2.0",
-    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
@@ -37,6 +36,8 @@
     "commander": "^14.0.3",
     "fs-extra": "^11.3.3",
     "js-yaml": "^4.1.1",
-    "kysely": "^0.28.11"
+    "kysely": "^0.28.11",
+    "simple-git": "^3.30.0",
+    "tsx": "^4.21.0"
   }
 }

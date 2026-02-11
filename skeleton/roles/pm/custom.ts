@@ -5,10 +5,10 @@ export default class CustomMember extends AbstractWorker {
 
   public async before(): Promise<boolean> {
     this.logger.debug('before()')
-    const readyForReviewIssue = await this.issueService.getNextIssue('ready_for_review', 'reviewing', this.NAME)
-    if (readyForReviewIssue) {
-      this.logger.info(`found issue: #${readyForReviewIssue.id} ${readyForReviewIssue.title}`)
-      await this.setup(readyForReviewIssue)
+    const issue = await this.issueService.getNextIssue('request_for_merge', 'in_merge_process', this.NAME)
+    if (issue) {
+      this.logger.info(`found issue: #${issue.id} ${issue.title}`)
+      await this.setup(issue)
       return true
     }
 
@@ -50,25 +50,18 @@ ${comments}
     }
 
     const res = this.parseResponse<{
-      result: "APPROVED" | "REJECT" | "ERROR",
+      result: "MERGED" | "ERROR",
       branch: string,
       issue_title: string,
       reason?: string
     }>(response)
 
-    if (res.result === "APPROVED") {
+    if (res.result === "MERGED") {
 
-      await this.issueService.updateStatus(this.ISSUE_ID, 'request_for_merge')
+      await this.issueService.updateStatus(this.ISSUE_ID, 'done')
       if (res.reason) {
         await this.issueService.comment(this.ISSUE_ID, this.NAME, res.reason)
       }
-
-    } else if (res.result === "REJECT") {
-
-      await this.issueService.updateStatus(this.ISSUE_ID, 'open')
-      await this.issueService.updateAssignee(this.ISSUE_ID, null)
-      await this.issueService.comment(this.ISSUE_ID, this.NAME, res.reason || "(no reason)")
-
     } else {
       this.logger.error(res)
       await this.issueService.updateStatus(this.ISSUE_ID, 'error')
