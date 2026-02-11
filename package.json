@@ -1,6 +1,6 @@
 {
   "name": "skiv",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "publishConfig": {
     "access": "public"
   },
@@ -13,11 +13,6 @@
   },
   "type": "commonjs",
   "main": "dist/esm/index.js",
-  "scripts": {
-    "build": "npm run build:cjs && npm run build:esm",
-    "build:cjs": "tsc --project tsconfig.cjs.json",
-    "build:esm": "tsc --project tsconfig.esm.json"
-  },
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
   "files": [
@@ -26,7 +21,7 @@
     "skeleton"
   ],
   "bin": {
-    "skiv": "bin/skiv.ts"
+    "skiv": "bin/skiv.js"
   },
   "devDependencies": {
     "@types/better-sqlite3": "^7.6.13",
@@ -39,6 +34,7 @@
     "better-sqlite3": "^12.6.2",
     "commander": "^14.0.3",
     "fs-extra": "^11.3.3",
+    "jiti": "^2.6.1",
     "js-yaml": "^4.1.1",
     "kysely": "^0.28.11",
     "simple-git": "^3.30.0",
