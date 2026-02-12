@@ -61,7 +61,7 @@ ${comments}
         await this.git
           .add('.')
           .commit(`feature: issue #${this.ISSUE_ID} ${res.issue_title}`)
-        await this.issueService.updateStatus(this.ISSUE_ID, 'ready_for_review')
+        await this.issueService.updateStatus(this.ISSUE_ID, 'pending_review')
       } catch (e) {
         this.logger.error(e as string)
         process.exit(1)
@@ -71,7 +71,7 @@ ${comments}
 
     } else {
       this.logger.error(res)
-      await this.issueService.updateStatus(this.ISSUE_ID, 'error')
+      await this.issueService.updateStatus(this.ISSUE_ID, 'failed')
       await this.cleanupWorktree()
       process.exit(1)
     }

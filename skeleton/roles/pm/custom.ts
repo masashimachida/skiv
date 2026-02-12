@@ -64,7 +64,7 @@ ${comments}
       }
     } else {
       this.logger.error(res)
-      await this.issueService.updateStatus(this.ISSUE_ID, 'error')
+      await this.issueService.updateStatus(this.ISSUE_ID, 'failed')
       await this.issueService.comment(this.ISSUE_ID, this.NAME, res.reason || "(no reason)")
       await this.cleanupWorktree()
       process.exit(1)

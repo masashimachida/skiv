@@ -58,20 +58,20 @@ ${comments}
 
     if (res.result === "APPROVED") {
 
-      await this.issueService.updateStatus(this.ISSUE_ID, 'request_for_merge')
+      await this.issueService.updateStatus(this.ISSUE_ID, 'approved')
       if (res.reason) {
         await this.issueService.comment(this.ISSUE_ID, this.NAME, res.reason)
       }
 
     } else if (res.result === "REJECT") {
 
-      await this.issueService.updateStatus(this.ISSUE_ID, 'open')
+      await this.issueService.updateStatus(this.ISSUE_ID, 'todo')
       await this.issueService.updateAssignee(this.ISSUE_ID, null)
       await this.issueService.comment(this.ISSUE_ID, this.NAME, res.reason || "(no reason)")
 
     } else {
       this.logger.error(res)
-      await this.issueService.updateStatus(this.ISSUE_ID, 'error')
+      await this.issueService.updateStatus(this.ISSUE_ID, 'failed')
       await this.issueService.comment(this.ISSUE_ID, this.NAME, res.reason || "(no reason)")
       await this.cleanupWorktree()
       process.exit(1)
