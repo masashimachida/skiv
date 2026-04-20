@@ -18,5 +18,5 @@ $ skiv init
 ### Run
 
 ```shell
-$ skiv planner
+$ skiv
 ```

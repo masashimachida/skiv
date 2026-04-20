@@ -37,7 +37,8 @@ exports.buildAgentPrompt = buildAgentPrompt;
 exports.spawnAgent = spawnAgent;
 const child_process_1 = require("child_process");
 const path = __importStar(require("path"));
-function buildAgentPrompt(roleName, roleConfig) {
+const logger_1 = require("./logger");
+function buildAgentPrompt(roleName, roleConfig, worktreePath) {
     const pickFrom = roleConfig.pickFrom ?? 'inbox';
     const defaultOutcome = roleConfig.defaultOutcome ?? 'done';
     const outcomesText = roleConfig.outcomes
@@ -49,6 +50,13 @@ function buildAgentPrompt(roleName, roleConfig) {
         ? `\n- このロールの最大リトライ回数は ${roleConfig.maxRetries} 回です。自分のコメント数がこれを超えているタスクはスキップしてください。`
         : '';
     return `あなたは "${roleName}" ロールのエージェントです。
+
+## 作業ディレクトリ
+あなたの作業ディレクトリは **${worktreePath}** です。
+- このディレクトリは専用の git worktree です（メインブランチとは分離されています）
+- ファイルの読み書きは必ずこのディレクトリ内で行ってください
+- 絶対パスを使う場合も必ず ${worktreePath} 以下のパスを使用してください
+- git のブランチ切り替え（checkout）は行わないでください
 
 ## あなたの役割
 ${roleConfig.prompt}
@@ -64,15 +72,22 @@ ${roleConfig.prompt}
    - assignee: "${roleName}"${roleConfig.claimStatus ? `\n   - status: "${roleConfig.claimStatus}"` : ''}
 4. mcp__task_manager__get_task と mcp__task_manager__list_comments でタスクの詳細とコメント履歴を取得する
    - コメント履歴には前回の作業結果やレビュー指摘が含まれている場合があるので必ず参照する
-5. 作業を実施する（カレントディレクトリは作業用 git worktree です。変更は必ずコミットしてください）
-6. 作業完了後:
+5. 作業を実施する
+   - カレントディレクトリは専用の git worktree です
+6. **変更を必ず git コミットする**（ファイルを変更した場合は必須）:
+   \`\`\`
+   git add -A
+   git commit -m "作業内容を簡潔に記述"
+   \`\`\`
+   - コミットしないと変更が失われるため、必ず実行すること
+7. 作業完了後:
    - mcp__task_manager__add_comment で結果を記録する（author="${roleName}"）
    - mcp__task_manager__update_task で status を更新し、assignee を null にクリアする（次のエージェントが拾えるようにする）:
 ${outcomesText}
 
 ## 注意
 - 1回の起動で1タスクだけ処理してください
-- タスクの処理が終わったら終了してください
+- ファイルを変更したら必ずコミットしてから終了してください
 `;
 }
 function buildCommand(tool, model, allowedTools) {
@@ -96,16 +111,16 @@ function buildCommand(tool, model, allowedTools) {
     }
 }
 function spawnAgent(agent, roleConfig, roleName, cwd) {
-    const prompt = buildAgentPrompt(roleName, roleConfig);
+    const prompt = buildAgentPrompt(roleName, roleConfig, cwd);
     const { cmd, args } = buildCommand(agent.tool, roleConfig.model, agent.allowedTools);
     return new Promise((resolve) => {
         const proc = (0, child_process_1.spawn)(cmd, args, { cwd, stdio: ['pipe', 'pipe', 'pipe'] });
-        proc.stdout.on('data', (data) => process.stdout.write(`[${agent.name}] ${data}`));
-        proc.stderr.on('data', (data) => process.stderr.write(`[${agent.name}] ${data}`));
+        proc.stdout.on('data', (data) => logger_1.log.agent(agent.name, data.toString()));
+        proc.stderr.on('data', (data) => logger_1.log.agent(agent.name, data.toString()));
         proc.stdin.write(prompt);
         proc.stdin.end();
         proc.on('close', (code) => {
-            console.log(`[${agent.name}] exited (code=${code})`);
+            logger_1.log.info(`[${agent.name}] process exited (code=${code})`);
             resolve();
         });
     });

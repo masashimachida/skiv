@@ -23,7 +23,26 @@ export async function init(): Promise<void> {
   }
 
   copyTemplate('skiv.config.json', path.resolve('skiv.config.json'));
-  copyTemplate('mcp.json', path.resolve('.skiv/mcp.json'));
+
+  const mcpJsonPath = path.resolve('.skiv/mcp.json');
+  if (existsSync(mcpJsonPath)) {
+    console.log(`  skip: .skiv/mcp.json (already exists)`);
+  } else {
+    const serverPath = path.join(__dirname, '..', 'task-manager-server.js');
+    const projectId = path.basename(process.cwd());
+    const mcpConfig = {
+      mcpServers: {
+        task_manager: {
+          command: 'node',
+          args: [serverPath],
+          env: { TASK_PROJECT_ID: projectId }
+        }
+      }
+    };
+    writeFileSync(mcpJsonPath, JSON.stringify(mcpConfig, null, 2));
+    console.log('  create: .skiv/mcp.json');
+  }
+
   copyTemplate('skiv/CLAUDE.md', path.resolve('.skiv/CLAUDE.md'));
 
   const claudeMdPath = path.resolve('CLAUDE.md');
@@ -42,7 +61,6 @@ export async function init(): Promise<void> {
   }
 
   console.log('\nskiv initialized! Next steps:');
-  console.log('  1. Edit .mcp.json to configure your task_manager MCP server');
-  console.log('  2. Edit skiv.config.json to configure your agents and roles');
-  console.log('  3. Run: skiv run');
+  console.log('  1. Edit skiv.config.json to configure your agents and roles');
+  console.log('  2. Run: skiv run');
 }

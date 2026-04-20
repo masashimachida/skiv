@@ -2,6 +2,8 @@
 import { init } from './commands/init';
 import { planner } from './commands/planner';
 import { run } from './commands/run';
+import { start } from './commands/start';
+import { web } from './commands/web';
 
 const command = process.argv[2];
 
@@ -16,9 +18,15 @@ const command = process.argv[2];
     case 'planner':
       await planner();
       break;
+    case 'web':
+      await web();
+      break;
     default:
-      console.log('Usage: skiv <command>\n\nCommands:\n  init     Initialize skiv in current project\n  planner  Start the Planner session\n  run      Start the orchestrator');
-      process.exit(command ? 1 : 0);
+      if (command) {
+        console.error(`Unknown command: ${command}`);
+        process.exit(1);
+      }
+      await start();
   }
 })().catch((err) => {
   console.error('Fatal error:', err);

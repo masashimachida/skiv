@@ -11,23 +11,32 @@
     "type": "git",
     "url": "git+https://github.com/masashimachida/skiv.git"
   },
+  "engines": {
+    "node": ">=24"
+  },
   "bin": {
     "skiv": "./dist/cli.js"
   },
   "files": [
     "dist/",
-    "templates/"
+    "templates/",
+    "resources/"
   ],
   "scripts": {
     "start": "ts-node src/cli.ts run",
-    "build": "tsc",
+    "build": "tsc && esbuild src/task-manager/mcp/index.ts --bundle --platform=node --format=cjs --outfile=dist/task-manager-server.js",
     "lint": "tsc --noEmit",
     "test": "jest"
   },
-  "devDependencies": {
+  "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0",
+    "uuid": "^9.0.0",
+    "zod": "^3.22.4"
+  },
+  "devDependencies": {
     "@types/jest": "^29.0.0",
     "@types/node": "^20.0.0",
+    "esbuild": "^0.25.0",
     "jest": "^29.0.0",
     "ts-jest": "^29.0.0",
     "ts-node": "^10.0.0",

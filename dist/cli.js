@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const init_1 = require("./commands/init");
 const planner_1 = require("./commands/planner");
 const run_1 = require("./commands/run");
+const start_1 = require("./commands/start");
+const web_1 = require("./commands/web");
 const command = process.argv[2];
 (async () => {
     switch (command) {
@@ -16,9 +18,15 @@ const command = process.argv[2];
         case 'planner':
             await (0, planner_1.planner)();
             break;
+        case 'web':
+            await (0, web_1.web)();
+            break;
         default:
-            console.log('Usage: skiv <command>\n\nCommands:\n  init     Initialize skiv in current project\n  planner  Start the Planner session\n  run      Start the orchestrator');
-            process.exit(command ? 1 : 0);
+            if (command) {
+                console.error(`Unknown command: ${command}`);
+                process.exit(1);
+            }
+            await (0, start_1.start)();
     }
 })().catch((err) => {
     console.error('Fatal error:', err);

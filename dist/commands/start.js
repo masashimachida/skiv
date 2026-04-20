@@ -33,10 +33,37 @@ var __importStar = (this && this.__importStar) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.planner = planner;
+exports.start = start;
 const child_process_1 = require("child_process");
+const fs_1 = require("fs");
 const path = __importStar(require("path"));
-async function planner() {
+const web_1 = require("./web");
+async function start() {
+    (0, web_1.prepareWebUi)();
+    const logPath = path.resolve('.skiv/orchestrator.log');
+    const logStream = (0, fs_1.createWriteStream)(logPath, { flags: 'a' });
+    const cliPath = path.resolve(__dirname, '../cli.js');
+    const orchestrator = (0, child_process_1.spawn)('node', [cliPath, 'run'], {
+        cwd: process.cwd(),
+        stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    orchestrator.stdout?.pipe(logStream);
+    orchestrator.stderr?.pipe(logStream);
+    orchestrator.on('close', (code) => {
+        logStream.end();
+        if (code !== 0 && code !== null) {
+            console.error(`\n[skiv] orchestrator exited unexpectedly (code=${code}). Check ${logPath}`);
+        }
+    });
+    const webPort = process.env.PORT ?? '3000';
+    const webProc = (0, web_1.spawnWebUi)(webPort);
+    webProc.on('close', (code) => {
+        if (code !== 0 && code !== null) {
+            console.error(`\n[skiv] web UI exited unexpectedly (code=${code})`);
+        }
+    });
+    console.log(`[skiv] orchestrator started (log: ${logPath})`);
+    console.log(`[skiv] web UI started at http://localhost:${webPort}`);
     const mcpConfigPath = path.resolve('.skiv/mcp.json');
     const claude = (0, child_process_1.spawn)('claude', ['--mcp-config', mcpConfigPath], {
         cwd: process.cwd(),
@@ -44,6 +71,8 @@ async function planner() {
     });
     return new Promise((resolve, reject) => {
         claude.on('close', (code) => {
+            orchestrator.kill();
+            webProc.kill();
             if (code === 0 || code === null)
                 resolve();
             else

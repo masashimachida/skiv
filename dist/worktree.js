@@ -35,10 +35,12 @@ var __importStar = (this && this.__importStar) || (function () {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createWorktree = createWorktree;
 exports.removeWorktree = removeWorktree;
+exports.hasCommits = hasCommits;
 exports.mergeFeatureBranch = mergeFeatureBranch;
 const child_process_1 = require("child_process");
 const path = __importStar(require("path"));
 const util_1 = require("util");
+const logger_1 = require("./logger");
 const mcp_1 = require("./mcp");
 const execAsync = (0, util_1.promisify)(child_process_1.exec);
 function worktreePath(taskId) {
@@ -51,9 +53,11 @@ async function createWorktree(taskId) {
         .then(() => true)
         .catch(() => false);
     if (branchExists) {
+        logger_1.log.info(`worktree: branch "${branch}" already exists, reusing`);
         await execAsync(`git worktree add "${wPath}" "${branch}"`);
     }
     else {
+        logger_1.log.info(`worktree: creating branch "${branch}"`);
         await execAsync(`git worktree add -b "${branch}" "${wPath}"`);
     }
     return wPath;
@@ -62,15 +66,26 @@ async function removeWorktree(taskId) {
     const wPath = worktreePath(taskId);
     await execAsync(`git worktree remove "${wPath}" --force`).catch(() => { });
 }
-async function mergeFeatureBranch(client, taskId) {
+async function hasCommits(taskId) {
     const branch = `feature/${taskId}`;
     try {
+        const { stdout } = await execAsync(`git rev-list --count main..${branch} 2>/dev/null || git rev-list --count HEAD..${branch}`);
+        return parseInt(stdout.trim(), 10) > 0;
+    }
+    catch {
+        return false;
+    }
+}
+async function mergeFeatureBranch(client, taskId) {
+    const branch = `feature/${taskId}`;
+    logger_1.log.info(`merge: attempting to merge "${branch}" into current branch`);
+    try {
         await execAsync(`git merge "${branch}" --no-ff -m "Merge ${branch}"`);
-        console.log(`[merge] ${branch} merged successfully`);
+        logger_1.log.info(`merge: "${branch}" merged successfully`);
     }
     catch (err) {
         const errorMsg = err instanceof Error ? err.message : String(err);
-        console.error(`[merge] failed to merge ${branch}:`, errorMsg);
+        logger_1.log.error(`merge: failed to merge "${branch}"`, errorMsg);
         await execAsync('git merge --abort').catch(() => { });
         await (0, mcp_1.callTool)(client, 'add_comment', {
             taskId,
@@ -78,5 +93,6 @@ async function mergeFeatureBranch(client, taskId) {
             body: `マージに失敗しました。手動で解決してください。\n\`\`\`\n${errorMsg}\n\`\`\``,
         });
         await (0, mcp_1.callTool)(client, 'update_task', { id: taskId, status: 'pending', assignee: null });
+        logger_1.log.warn(`merge: task ${taskId} set to "pending"`);
     }
 }
