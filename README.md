@@ -10,21 +10,13 @@ $ npm i -g skiv
 
 ### Initialize
 
-cd to your project directory
-
 ```shell
-$ npx skiv init
+$ cd <your-project-directory>
+$ skiv init
 ```
 
-generate `.skiv` directory
-
-edit `.skiv/config.yaml` and `.skiv/roles/*`
-
-add `.skiv` to your gitignore
-
-### Start
+### Run
 
 ```shell
-$ tmux
-$ npx skiv start
+$ skiv planner
 ```

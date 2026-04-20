@@ -1,0 +1,53 @@
+{
+  "roles": {
+    "coder": {
+      "prompt": "あなたは TypeScript の実装専門家です。与えられた要件をコードで実装してください。テストは書かないでください。",
+      "pickFrom": "inbox",
+      "claimStatus": "in_progress",
+      "defaultOutcome": "review_requested"
+    },
+    "checker": {
+      "prompt": "あなたは厳格なコードレビュアーです。バグ・セキュリティ・可読性の観点でレビューしてください。コードは変更しないでください。",
+      "pickFrom": "review_requested",
+      "claimStatus": "in_review",
+      "outcomes": {
+        "APPROVED": "done",
+        "REJECTED": "inbox"
+      },
+      "defaultOutcome": "pending",
+      "maxRetries": 3
+    }
+  },
+  "agents": [
+    {
+      "name": "claude-coder",
+      "tool": "claude",
+      "role": "coder",
+      "allowedTools": [
+        "Read",
+        "Edit",
+        "Write",
+        "Bash",
+        "mcp__task_manager__list_tasks",
+        "mcp__task_manager__get_task",
+        "mcp__task_manager__update_task",
+        "mcp__task_manager__add_comment",
+        "mcp__task_manager__list_comments"
+      ]
+    },
+    {
+      "name": "claude-checker",
+      "tool": "claude",
+      "role": "checker",
+      "allowedTools": [
+        "Read",
+        "mcp__task_manager__list_tasks",
+        "mcp__task_manager__get_task",
+        "mcp__task_manager__update_task",
+        "mcp__task_manager__add_comment",
+        "mcp__task_manager__list_comments"
+      ]
+    }
+  ],
+  "pollingInterval": 10
+}

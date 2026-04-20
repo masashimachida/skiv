@@ -1,6 +1,0 @@
-model: sonnet
-members:
-  - name: CORDER
-    role: corder
-  - name: REVIEWER
-    role: reviewer
